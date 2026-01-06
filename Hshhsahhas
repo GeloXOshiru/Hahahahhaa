@@ -1,85 +1,35 @@
-local UILib = {}
-UILib.__index = UILib
+local Elerium = loadstring(game:HttpGet("https://raw.githubusercontent.com/AlexR32/Elerium/master/Library.lua"))()
 
-function UILib.new(config)
-    local self = setmetatable({}, UILib)
-    
-    self.title = config.title or "UI Library"
-    self.x = config.x or 100
-    self.y = config.y or 100
-    self.width = config.width or 400
-    self.height = config.height or 300
-    self.theme = config.theme or {
-        background = {0.15, 0.15, 0.15, 1},
-        accent = {0.2, 0.6, 1, 1},
-        text = {1, 1, 1, 1},
-        header = {0.1, 0.1, 0.1, 1}
-    }
-    
-    self.logo = nil
-    if config.logoPath and love.filesystem.getInfo(config.logoPath) then
-        self.logo = love.graphics.newImage(config.logoPath)
-    end
-    
-    self.elements = {}
-    self.visible = true
-    
-    return self
-end
+local Window = Elerium:CreateWindow("Elerium UI")
 
-function UILib:toggle()
-    self.visible = not self.visible
-end
+local Tab = Window:AddTab("Main")
 
-function UILib:draw()
-    if not self.visible then return end
+Tab:AddButton("Print Hello", function()
+    print("Hello World!")
+end)
 
-    love.graphics.setColor(self.theme.background)
-    love.graphics.rectangle("fill", self.x, self.y, self.width, self.height, 8)
+Tab:AddToggle("Toggle Feature", function(state)
+    print("Feature is now: " .. tostring(state))
+end)
 
-    love.graphics.setColor(self.theme.header)
-    love.graphics.rectangle("fill", self.x, self.y, self.width, 50, 8)
+Tab:AddSlider("Speed", 16, 100, 16, function(value)
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
+end)
 
-    if self.logo then
-        love.graphics.setColor(1, 1, 1, 1)
-        local padding = 10
-        local size = 30
-        local scaleX = size / self.logo:getWidth()
-        local scaleY = size / self.logo:getHeight()
-        love.graphics.draw(self.logo, self.x + padding, self.y + 10, 0, scaleX, scaleY)
-        
-        love.graphics.setColor(self.theme.text)
-        love.graphics.print(self.title, self.x + padding + size + 10, self.y + 18)
-    else
-        love.graphics.setColor(self.theme.text)
-        love.graphics.print(self.title, self.x + 15, self.y + 18)
-    end
+Tab:AddDropdown("Select Option", {"Option 1", "Option 2", "Option 3"}, function(selected)
+    print("Selected: " .. selected)
+end)
 
-    love.graphics.setColor(self.theme.accent)
-    love.graphics.setLineWidth(2)
-    love.graphics.rectangle("line", self.x, self.y, self.width, self.height, 8)
+Tab:AddTextbox("Welcome", "Type here...", function(text)
+    print("User typed: " .. text)
+end)
 
-    for _, element in ipairs(self.elements) do
-        element:draw(self.x, self.y)
-    end
-end
+Tab:AddColorpicker("UI Color", Color3.fromRGB(255, 255, 255), function(color)
+    print("Color changed to: " .. tostring(color))
+end)
 
-function UILib:addButton(text, callback)
-    local button = {
-        text = text,
-        callback = callback,
-        y_offset = #self.elements * 40 + 70
-    }
-    
-    function button:draw(baseX, baseY)
-        love.graphics.setColor(0.25, 0.25, 0.25, 1)
-        love.graphics.rectangle("fill", baseX + 20, baseY + self.y_offset, 150, 30, 4)
-        love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.print(self.text, baseX + 30, baseY + self.y_offset + 8)
-    end
-    
-    table.insert(self.elements, button)
-    return button
-end
+Tab:AddBind("Keybind", Enum.KeyCode.F, function()
+    print("Keybind pressed!")
+end)
 
-return UILib
+Tab:AddLabel("This is a simple")
